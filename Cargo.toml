@@ -1,0 +1,7 @@
+[package]
+name = "kaigan"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+borsh = "0.10.3"
