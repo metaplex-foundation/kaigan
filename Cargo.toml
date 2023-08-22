@@ -4,6 +4,7 @@ version = "0.0.1"
 description = "Rust companion for Kinobi"
 authors = ["Metaplex Developers <dev@metaplex.com>"]
 repository = "https://github.com/metaplex-foundation/kaigan"
+license = "MIT"
 edition = "2021"
 readme = "README.md"
 
