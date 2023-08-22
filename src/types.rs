@@ -1,9 +1,7 @@
+use borsh::{BorshDeserialize, BorshSerialize};
 use std::fmt::Debug;
 use std::io::Write;
 use std::ops::{Deref, DerefMut};
-
-use borsh::maybestd::io::Read;
-use borsh::{BorshDeserialize, BorshSerialize};
 
 /// A vector that deserializes from a stream of bytes.
 ///
@@ -50,21 +48,19 @@ impl<T> BorshDeserialize for RemainderVec<T>
 where
     T: BorshSerialize + BorshDeserialize,
 {
-    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::maybestd::io::Result<Self> {
+    fn deserialize(buffer: &mut &[u8]) -> borsh::maybestd::io::Result<Self> {
         let length = std::mem::size_of::<T>();
-        // buffer to read the data
-        let mut buffer = vec![0u8; length];
         // vec to store the items
-        let mut items: Vec<T> = Vec::new();
+        let mut items: Vec<T> = Vec::with_capacity(buffer.len() / length);
 
         loop {
-            match reader.read(&mut buffer)? {
+            match buffer.len() {
                 0 => break,
-                n if n == length => items.push(T::deserialize(&mut buffer.as_slice())?),
+                n if n >= length => items.push(T::deserialize(buffer)?),
                 e => {
                     return Err(borsh::maybestd::io::Error::new(
                         borsh::maybestd::io::ErrorKind::InvalidData,
-                        format!("unexpected number of bytes (read {e}, expected {length})"),
+                        format!("unexpected number of bytes (remaining {e}, expected {length})"),
                     ))
                 }
             }
