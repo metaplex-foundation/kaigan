@@ -1,7 +1,11 @@
 [package]
 name = "kaigan"
 version = "0.0.1"
+description = "Rust companion for Kinobi"
+authors = ["Metaplex Developers <dev@metaplex.com>"]
+repository = "https://github.com/metaplex-foundation/kaigan"
 edition = "2021"
+readme = "README.md"
 
 [dependencies]
 borsh = "^0.9"
