@@ -10,6 +10,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 /// This is useful for deserializing a vector that does not have
 /// a length prefix. In order to determine how many elements to deserialize,
 /// the type of the elements must implement the trait `Sized`.
+#[derive(Clone, Eq, PartialEq)]
 pub struct RemainderVec<T: BorshSerialize + BorshDeserialize>(Vec<T>);
 
 /// Deferences the inner `Vec` type.
