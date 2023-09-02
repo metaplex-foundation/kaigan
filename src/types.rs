@@ -9,6 +9,7 @@ use std::ops::{Deref, DerefMut};
 /// a length prefix. In order to determine how many elements to deserialize,
 /// the type of the elements must implement the trait `Sized`.
 #[derive(Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct RemainderVec<T: BorshSerialize + BorshDeserialize>(Vec<T>);
 
 /// Deferences the inner `Vec` type.
