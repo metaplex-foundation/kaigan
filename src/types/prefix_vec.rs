@@ -126,12 +126,8 @@ macro_rules! prefix_vec_types {
     };
 }
 
-prefix_vec_types!(
-    (U8PrefixVec, u8),
-    (U16PrefixVec, u16),
-    (U32PrefixVec, u32),
-    (U64PrefixVec, u64)
-);
+// Generate the prefix vec types.
+prefix_vec_types!((U8PrefixVec, u8), (U16PrefixVec, u16), (U64PrefixVec, u64));
 
 #[cfg(test)]
 mod tests {
@@ -159,18 +155,6 @@ mod tests {
         data[18..].copy_from_slice(u64::to_le_bytes(10).as_slice());
 
         let vec = U16PrefixVec::<u64>::try_from_slice(&data).unwrap();
-
-        assert_eq!(vec.len(), 3);
-        assert_eq!(vec.as_slice(), &[15, 7, 10]);
-
-        // slices of bytes (u32 length + 3 u64 values)
-        let mut data = [0u8; 28];
-        data[0..4].copy_from_slice(u32::to_le_bytes(3).as_slice());
-        data[4..12].copy_from_slice(u64::to_le_bytes(15).as_slice());
-        data[12..20].copy_from_slice(u64::to_le_bytes(7).as_slice());
-        data[20..].copy_from_slice(u64::to_le_bytes(10).as_slice());
-
-        let vec = U32PrefixVec::<u64>::try_from_slice(&data).unwrap();
 
         assert_eq!(vec.len(), 3);
         assert_eq!(vec.as_slice(), &[15, 7, 10]);
@@ -210,18 +194,6 @@ mod tests {
         source.serialize(&mut data.as_mut_slice()).unwrap();
 
         let restored = U16PrefixVec::<u32>::try_from_slice(&data).unwrap();
-
-        assert_eq!(restored.len(), source.len());
-        assert_eq!(restored.as_slice(), source.as_slice());
-
-        // u32 length
-        let values = (0..10).collect::<Vec<u32>>();
-        let source = U32PrefixVec::<u32>(values);
-
-        let mut data = [0u8; 44];
-        source.serialize(&mut data.as_mut_slice()).unwrap();
-
-        let restored = U32PrefixVec::<u32>::try_from_slice(&data).unwrap();
 
         assert_eq!(restored.len(), source.len());
         assert_eq!(restored.as_slice(), source.as_slice());
