@@ -53,23 +53,10 @@ where
     T: BorshSerialize + BorshDeserialize,
 {
     fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::maybestd::io::Result<Self> {
-        let length = std::mem::size_of::<T>();
-        // buffer to read the data
-        let mut buffer = vec![0u8; length];
-        // vec to store the items
         let mut items: Vec<T> = Vec::new();
 
-        loop {
-            match reader.read(&mut buffer)? {
-                0 => break,
-                n if n == length => items.push(T::deserialize(&mut buffer.as_slice())?),
-                e => {
-                    return Err(borsh::maybestd::io::Error::new(
-                        borsh::maybestd::io::ErrorKind::InvalidData,
-                        format!("unexpected number of bytes (read {e}, expected {length})"),
-                    ))
-                }
-            }
+        while let Ok(item) = T::deserialize_reader(reader) {
+            items.push(item);
         }
 
         Ok(Self(items))
