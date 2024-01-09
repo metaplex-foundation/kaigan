@@ -74,7 +74,7 @@ macro_rules! prefix_string_types {
                 // add the length prefix
                 $prefix_type::serialize(&(self.0.len() as $prefix_type), writer)?;
                 // serialize the string (without its "natural" prefix)
-                writer.write(self.0.as_bytes())?;
+                writer.write_all(self.0.as_bytes())?;
 
                 Ok(())
             }
@@ -135,7 +135,7 @@ mod tests {
         let mut data = [0u8; 7];
         source.serialize(&mut data.as_mut_slice()).unwrap();
 
-        print!("serialized data: {:?}\n", data);
+        println!("serialized data: {:?}", data);
         let restored = U8PrefixString::try_from_slice(&data).unwrap();
 
         assert_eq!(restored.len(), source.len());
