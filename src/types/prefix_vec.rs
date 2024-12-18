@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use std::io::Write;
 use std::ops::{Deref, DerefMut};
 
-use borsh::maybestd::io::Read;
+use borsh::io::Read;
 use borsh::{BorshDeserialize, BorshSerialize};
 
 /// Macro to automate the generation of `PrefixVec` types.
@@ -55,7 +55,7 @@ macro_rules! prefix_vec_types {
         where
             T: BorshSerialize + BorshDeserialize,
         {
-            fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::maybestd::io::Result<Self> {
+            fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::io::Result<Self> {
                 // read the length of the vec
                 let mut buffer = vec![0u8; std::mem::size_of::<$prefix_type>()];
                 reader.read_exact(&mut buffer)?;
@@ -74,8 +74,8 @@ macro_rules! prefix_vec_types {
                             items.push(T::deserialize(&mut buffer.as_slice())?)
                         }
                         e => {
-                            return Err(borsh::maybestd::io::Error::new(
-                                borsh::maybestd::io::ErrorKind::InvalidData,
+                            return Err(borsh::io::Error::new(
+                                borsh::io::ErrorKind::InvalidData,
                                 format!(
                                     "unexpected number of bytes (read {e}, expected {item_length})"
                                 ),
@@ -85,8 +85,8 @@ macro_rules! prefix_vec_types {
                 }
 
                 if items.len() != length {
-                    return Err(borsh::maybestd::io::Error::new(
-                        borsh::maybestd::io::ErrorKind::InvalidData,
+                    return Err(borsh::io::Error::new(
+                        borsh::io::ErrorKind::InvalidData,
                         format!(
                             "unexpected vec length (read {}, expected {length})",
                             items.len()
@@ -102,10 +102,10 @@ macro_rules! prefix_vec_types {
         where
             T: BorshSerialize + BorshDeserialize,
         {
-            fn serialize<W: Write>(&self, writer: &mut W) -> borsh::maybestd::io::Result<()> {
+            fn serialize<W: Write>(&self, writer: &mut W) -> borsh::io::Result<()> {
                 if self.0.len() > $prefix_type::MAX as usize {
-                    return Err(borsh::maybestd::io::Error::new(
-                        borsh::maybestd::io::ErrorKind::InvalidData,
+                    return Err(borsh::io::Error::new(
+                        borsh::io::ErrorKind::InvalidData,
                         format!(
                             "size of vec too big for type: {} > {}",
                             self.0.len(),
@@ -222,7 +222,7 @@ mod tests {
 
         let error = U64PrefixVec::<u64>::try_from_slice(&data).unwrap_err();
 
-        assert_eq!(error.kind(), borsh::maybestd::io::ErrorKind::InvalidData);
+        assert_eq!(error.kind(), borsh::io::ErrorKind::InvalidData);
     }
 
     #[test]
@@ -236,7 +236,7 @@ mod tests {
 
         let error = U64PrefixVec::<u64>::try_from_slice(&data).unwrap_err();
 
-        assert_eq!(error.kind(), borsh::maybestd::io::ErrorKind::InvalidData);
+        assert_eq!(error.kind(), borsh::io::ErrorKind::InvalidData);
     }
 
     #[test]
@@ -248,6 +248,6 @@ mod tests {
         let mut data = [0u8; 41];
         let error = source.serialize(&mut data.as_mut_slice()).unwrap_err();
 
-        assert_eq!(error.kind(), borsh::maybestd::io::ErrorKind::InvalidData);
+        assert_eq!(error.kind(), borsh::io::ErrorKind::InvalidData);
     }
 }

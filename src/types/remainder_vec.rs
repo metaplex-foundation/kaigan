@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use std::io::Write;
 use std::ops::{Deref, DerefMut};
 
-use borsh::maybestd::io::Read;
+use borsh::io::Read;
 use borsh::{BorshDeserialize, BorshSerialize};
 
 /// A vector that deserializes from a stream of bytes.
@@ -52,7 +52,7 @@ impl<T> BorshDeserialize for RemainderVec<T>
 where
     T: BorshSerialize + BorshDeserialize,
 {
-    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::maybestd::io::Result<Self> {
+    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::io::Result<Self> {
         let mut items: Vec<T> = Vec::new();
 
         while let Ok(item) = T::deserialize_reader(reader) {
@@ -67,7 +67,7 @@ impl<T> BorshSerialize for RemainderVec<T>
 where
     T: BorshSerialize + BorshDeserialize,
 {
-    fn serialize<W: Write>(&self, writer: &mut W) -> borsh::maybestd::io::Result<()> {
+    fn serialize<W: Write>(&self, writer: &mut W) -> borsh::io::Result<()> {
         // serialize each item without adding a prefix for the length
         for item in self.0.iter() {
             item.serialize(writer)?;
@@ -119,6 +119,6 @@ mod tests {
 
         let error = RemainderVec::<u64>::try_from_slice(&data).unwrap_err();
 
-        assert_eq!(error.kind(), borsh::maybestd::io::ErrorKind::InvalidData);
+        assert_eq!(error.kind(), borsh::io::ErrorKind::InvalidData);
     }
 }
