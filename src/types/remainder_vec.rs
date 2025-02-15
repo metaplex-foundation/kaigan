@@ -1,9 +1,16 @@
 use std::fmt::Debug;
+#[cfg(not(feature = "anchor"))]
 use std::io::Write;
 use std::ops::{Deref, DerefMut};
 
+#[cfg(feature = "anchor")]
+use anchor_lang::prelude::{
+    AnchorDeserialize as CrateDeserialize, AnchorSerialize as CrateSerialize,
+};
+#[cfg(not(feature = "anchor"))]
 use borsh::maybestd::io::Read;
-use borsh::{BorshDeserialize, BorshSerialize};
+#[cfg(not(feature = "anchor"))]
+use borsh::{BorshDeserialize as CrateDeserialize, BorshSerialize as CrateSerialize};
 
 /// A vector that deserializes from a stream of bytes.
 ///
@@ -12,12 +19,19 @@ use borsh::{BorshDeserialize, BorshSerialize};
 /// the type of the elements must implement the trait `Sized`.
 #[derive(Clone, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct RemainderVec<T: BorshSerialize + BorshDeserialize>(Vec<T>);
+#[cfg_attr(
+    feature = "anchor",
+    derive(
+        anchor_lang::prelude::AnchorSerialize,
+        anchor_lang::prelude::AnchorDeserialize
+    )
+)]
+pub struct RemainderVec<T: CrateSerialize + CrateDeserialize>(Vec<T>);
 
 /// Deferences the inner `Vec` type.
 impl<T> Deref for RemainderVec<T>
 where
-    T: BorshSerialize + BorshDeserialize,
+    T: CrateSerialize + CrateDeserialize,
 {
     type Target = Vec<T>;
 
@@ -29,7 +43,7 @@ where
 /// Deferences the inner `Vec` type as mutable.
 impl<T> DerefMut for RemainderVec<T>
 where
-    T: BorshSerialize + BorshDeserialize,
+    T: CrateSerialize + CrateDeserialize,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
@@ -41,16 +55,17 @@ where
 /// This implementation simply forwards to the inner `Vec` type.
 impl<T> Debug for RemainderVec<T>
 where
-    T: BorshSerialize + BorshDeserialize + Debug,
+    T: CrateSerialize + CrateDeserialize + Debug,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{:?}", self.0))
     }
 }
 
-impl<T> BorshDeserialize for RemainderVec<T>
+#[cfg(not(feature = "anchor"))]
+impl<T> CrateDeserialize for RemainderVec<T>
 where
-    T: BorshSerialize + BorshDeserialize,
+    T: CrateSerialize + CrateDeserialize,
 {
     fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::maybestd::io::Result<Self> {
         let mut items: Vec<T> = Vec::new();
@@ -63,9 +78,10 @@ where
     }
 }
 
-impl<T> BorshSerialize for RemainderVec<T>
+#[cfg(not(feature = "anchor"))]
+impl<T> CrateSerialize for RemainderVec<T>
 where
-    T: BorshSerialize + BorshDeserialize,
+    T: CrateSerialize + CrateDeserialize,
 {
     fn serialize<W: Write>(&self, writer: &mut W) -> borsh::maybestd::io::Result<()> {
         // serialize each item without adding a prefix for the length
@@ -100,8 +116,8 @@ mod tests {
         let values = (0..10).collect::<Vec<u32>>();
         let source = RemainderVec::<u32>(values);
 
-        let mut data = [0u8; 40];
-        source.serialize(&mut data.as_mut_slice()).unwrap();
+        let mut data = Vec::new();
+        source.serialize(&mut data).unwrap();
 
         let restored = RemainderVec::<u32>::try_from_slice(&data).unwrap();
 
