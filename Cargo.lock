@@ -642,7 +642,7 @@ dependencies = [
 
 [[package]]
 name = "kaigan"
-version = "0.2.6"
+version = "0.3.0"
 dependencies = [
  "anchor-lang",
  "borsh 0.10.3",

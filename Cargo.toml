@@ -6,7 +6,7 @@ license = "MIT"
 name = "kaigan"
 readme = "README.md"
 repository = "https://github.com/metaplex-foundation/kaigan"
-version = "0.2.6"
+version = "0.3.0"
 
 [features]
 anchor = ["dep:anchor-lang"]
