@@ -1,5 +1,5 @@
 use borsh::{
-    maybestd::io::{Error, ErrorKind, Read, Result},
+    io::{Error, ErrorKind, Read, Result},
     BorshDeserialize, BorshSerialize,
 };
 use std::fmt::Debug;
