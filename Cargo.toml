@@ -14,5 +14,6 @@ serde = ["dep:serde"]
 
 [dependencies]
 anchor-lang = { version = "0.32.1", optional = true }
-borsh = "1.5.7"
+borsh_1_5 = { version = "1.5", package = "borsh" }
+borsh = { version = "0.10.3" }
 serde = { version = "1.0", features = ["derive"], optional = true }

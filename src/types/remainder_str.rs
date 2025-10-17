@@ -1,4 +1,4 @@
-use borsh::io::Read;
+use borsh_1_5::io::Read;
 use borsh::{BorshDeserialize, BorshSerialize};
 use std::fmt::Debug;
 use std::io::Write;
@@ -54,7 +54,7 @@ impl Debug for RemainderStr {
 }
 
 impl BorshDeserialize for RemainderStr {
-    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::io::Result<Self> {
+    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh_1_5::io::Result<Self> {
         let mut value: String = String::new();
         while let Ok(c) = u8::deserialize_reader(reader) {
             value.push(c as char);
@@ -64,7 +64,7 @@ impl BorshDeserialize for RemainderStr {
 }
 
 impl BorshSerialize for RemainderStr {
-    fn serialize<W: Write>(&self, writer: &mut W) -> borsh::io::Result<()> {
+    fn serialize<W: Write>(&self, writer: &mut W) -> borsh_1_5::io::Result<()> {
         // serialize the bytes of the string without adding a prefix
         for c in self.0.as_bytes() {
             c.serialize(writer)?;

@@ -558,6 +558,7 @@ name = "kaigan"
 version = "0.3.0"
 dependencies = [
  "anchor-lang",
+ "borsh 0.10.3",
  "borsh 1.5.7",
  "serde",
 ]

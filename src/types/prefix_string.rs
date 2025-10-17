@@ -1,4 +1,4 @@
-use borsh::{
+use borsh_1_5::{
     io::{Error, ErrorKind, Read, Result},
     BorshDeserialize, BorshSerialize,
 };
