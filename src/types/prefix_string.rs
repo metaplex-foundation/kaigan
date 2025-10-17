@@ -1,7 +1,5 @@
-use borsh_1_5::{
-    io::{Error, ErrorKind, Read, Result},
-    BorshDeserialize, BorshSerialize,
-};
+use borsh::{BorshDeserialize, BorshSerialize};
+use borsh_1_5::io::{Error, ErrorKind, Read, Result};
 use std::fmt::Debug;
 use std::io::Write;
 use std::ops::Deref;
