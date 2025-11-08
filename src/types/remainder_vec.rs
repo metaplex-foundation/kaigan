@@ -8,7 +8,7 @@ use anchor_lang::prelude::{
     AnchorDeserialize as CrateDeserialize, AnchorSerialize as CrateSerialize,
 };
 #[cfg(not(feature = "anchor"))]
-use borsh::maybestd::io::Read;
+use borsh_1_5::io::Read;
 #[cfg(not(feature = "anchor"))]
 use borsh::{BorshDeserialize as CrateDeserialize, BorshSerialize as CrateSerialize};
 
@@ -28,7 +28,7 @@ use borsh::{BorshDeserialize as CrateDeserialize, BorshSerialize as CrateSeriali
 )]
 pub struct RemainderVec<T: CrateSerialize + CrateDeserialize>(Vec<T>);
 
-/// Deferences the inner `Vec` type.
+/// Dereferences the inner `Vec` type.
 impl<T> Deref for RemainderVec<T>
 where
     T: CrateSerialize + CrateDeserialize,
@@ -40,7 +40,7 @@ where
     }
 }
 
-/// Deferences the inner `Vec` type as mutable.
+/// Dereferences the inner `Vec` type as mutable.
 impl<T> DerefMut for RemainderVec<T>
 where
     T: CrateSerialize + CrateDeserialize,
@@ -67,7 +67,7 @@ impl<T> CrateDeserialize for RemainderVec<T>
 where
     T: CrateSerialize + CrateDeserialize,
 {
-    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh::maybestd::io::Result<Self> {
+    fn deserialize_reader<R: Read>(reader: &mut R) -> borsh_1_5::io::Result<Self> {
         let mut items: Vec<T> = Vec::new();
 
         while let Ok(item) = T::deserialize_reader(reader) {
@@ -83,7 +83,7 @@ impl<T> CrateSerialize for RemainderVec<T>
 where
     T: CrateSerialize + CrateDeserialize,
 {
-    fn serialize<W: Write>(&self, writer: &mut W) -> borsh::maybestd::io::Result<()> {
+    fn serialize<W: Write>(&self, writer: &mut W) -> borsh_1_5::io::Result<()> {
         // serialize each item without adding a prefix for the length
         for item in self.0.iter() {
             item.serialize(writer)?;
@@ -135,6 +135,6 @@ mod tests {
 
         let error = RemainderVec::<u64>::try_from_slice(&data).unwrap_err();
 
-        assert_eq!(error.kind(), borsh::maybestd::io::ErrorKind::InvalidData);
+        assert_eq!(error.kind(), borsh_1_5::io::ErrorKind::InvalidData);
     }
 }
