@@ -7,10 +7,12 @@ use std::ops::{Deref, DerefMut};
 use anchor_lang::prelude::{
     AnchorDeserialize as CrateDeserialize, AnchorSerialize as CrateSerialize,
 };
+#[cfg(all(not(feature = "anchor"), not(feature = "borsh-v1")))]
+use borsh::{BorshDeserialize as CrateDeserialize, BorshSerialize as CrateSerialize};
 #[cfg(not(feature = "anchor"))]
 use borsh_1_5::io::Read;
-#[cfg(not(feature = "anchor"))]
-use borsh::{BorshDeserialize as CrateDeserialize, BorshSerialize as CrateSerialize};
+#[cfg(all(not(feature = "anchor"), feature = "borsh-v1"))]
+use borsh_1_5::{BorshDeserialize as CrateDeserialize, BorshSerialize as CrateSerialize};
 
 /// A vector that deserializes from a stream of bytes.
 ///

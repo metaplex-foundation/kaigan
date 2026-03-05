@@ -2,8 +2,11 @@ use std::fmt::Debug;
 use std::io::Write;
 use std::ops::{Deref, DerefMut};
 
-use borsh_1_5::io::Read;
+#[cfg(not(feature = "borsh-v1"))]
 use borsh::{BorshDeserialize, BorshSerialize};
+use borsh_1_5::io::Read;
+#[cfg(feature = "borsh-v1")]
+use borsh_1_5::{BorshDeserialize, BorshSerialize};
 
 /// Macro to automate the generation of `PrefixVec` types.
 macro_rules! prefix_vec_types {
