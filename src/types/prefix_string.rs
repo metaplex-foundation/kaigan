@@ -1,5 +1,8 @@
+#[cfg(not(feature = "borsh-v1"))]
 use borsh::{BorshDeserialize, BorshSerialize};
 use borsh_1_5::io::{Error, ErrorKind, Read, Result};
+#[cfg(feature = "borsh-v1")]
+use borsh_1_5::{BorshDeserialize, BorshSerialize};
 use std::fmt::Debug;
 use std::io::Write;
 use std::ops::Deref;
