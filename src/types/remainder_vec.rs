@@ -70,10 +70,22 @@ where
     T: CrateSerialize + CrateDeserialize,
 {
     fn deserialize_reader<R: Read>(reader: &mut R) -> borsh_1_5::io::Result<Self> {
-        let mut items: Vec<T> = Vec::new();
+        let mut data = Vec::new();
+        reader.read_to_end(&mut data)?;
 
-        while let Ok(item) = T::deserialize_reader(reader) {
-            items.push(item);
+        let mut items: Vec<T> = Vec::new();
+        let mut cursor = std::io::Cursor::new(&data);
+
+        while (cursor.position() as usize) < data.len() {
+            match T::deserialize_reader(&mut cursor) {
+                Ok(item) => items.push(item),
+                Err(_) => {
+                    return Err(borsh_1_5::io::Error::new(
+                        borsh_1_5::io::ErrorKind::InvalidData,
+                        "unexpected trailing bytes",
+                    ));
+                }
+            }
         }
 
         Ok(Self(items))
